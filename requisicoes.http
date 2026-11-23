@@ -1,0 +1,53 @@
+### No IntelliJ IDEA ou VS Code REST Client, executar em sequência.
+@base = http://localhost:8080
+
+### 1) Criar cliente
+POST {{base}}/api/clientes
+Content-Type: application/json
+
+{"nome":"Ana Silva","email":"ana@exemplo.com","documento":"12345678901"}
+
+### 2) Criar regra antifraude
+POST {{base}}/api/regras
+Content-Type: application/json
+
+{"nome":"Alto valor","descricao":"Monitorar transacoes acima de 1000","limiteValor":1000.00,"ativa":true}
+
+### 3) Criar PIX — ajuste clienteId e regraIds conforme resposta anterior
+POST {{base}}/api/transacoes/pix
+Content-Type: application/json
+
+{"valor":2500.50,"status":"PENDENTE","clienteId":1,"regraIds":[1],"chavePix":"ana@pix.com","bancoDestino":"Banco Exemplo"}
+
+### 4) Criar cartão
+POST {{base}}/api/transacoes/cartao
+Content-Type: application/json
+
+{"valor":190.90,"status":"APROVADA","clienteId":1,"regraIds":[1],"ultimosQuatroDigitos":"1234","bandeira":"VISA"}
+
+### 5) Consulta polimórfica (PIX + Cartão)
+GET {{base}}/api/transacoes
+
+### 6) Consultar cliente
+GET {{base}}/api/clientes/1
+
+### 7) Alterar status do PIX
+PUT {{base}}/api/transacoes/pix/1
+Content-Type: application/json
+
+{"valor":2500.50,"status":"BLOQUEADA","clienteId":1,"regraIds":[1],"chavePix":"ana@pix.com","bancoDestino":"Banco Exemplo"}
+
+### 8) Consultar transação depois da alteração
+GET {{base}}/api/transacoes/1
+
+### 9) Excluir cartão — ajuste ID conforme resposta do POST
+DELETE {{base}}/api/transacoes/cartao/2
+
+### 10) Excluir PIX
+DELETE {{base}}/api/transacoes/pix/1
+
+### 11) Excluir regra
+DELETE {{base}}/api/regras/1
+
+### 12) Excluir cliente
+DELETE {{base}}/api/clientes/1
